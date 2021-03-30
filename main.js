@@ -12,14 +12,14 @@ const port = 80;
 const app = express();
 
 // Database like stuff
-let currentActivity;
+let currentActivities;
 
-function fetchActivity() {
-    currentActivity = JSON.parse(fs.readFileSync(activityFile));
+function fetchActivities() {
+    currentActivities = JSON.parse(fs.readFileSync(activityFile));
 }
 
-function registerParticipant(participant) {
-    const listPath = `${participantFolder}list-${currentActivity.name}.json`;
+function registerParticipant(participant, activityName) {
+    const listPath = `${participantFolder}list-${activityName}.json`;
 
     if (!fs.existsSync(listPath)) {
         fs.writeFileSync(listPath, JSON.stringify([]));
@@ -31,7 +31,7 @@ function registerParticipant(participant) {
     fs.writeFileSync(listPath, JSON.stringify(participantList));
 }
 
-fetchActivity();
+fetchActivities();
 
 // 1pp setup
 app.set('view engine', 'ejs');
@@ -43,29 +43,42 @@ app.use(formidable());
 
 // App routes
 app.get('/', (req, res) => {
-    fetchActivity();
+    fetchActivities();
     res.render('link', {
-        formUrl: `${req.protocol}://${req.hostname}/form/${currentActivity.name}`
+        activities: currentActivities,
+        baseUrl: `${req.protocol}://${req.hostname}/form/`
     });
 });
 app.get('/form/', (req, res) => {
     res.send(`A link ID must be specified`);
 });
 app.get('/form/:id', (req, res) => {
+    const activityIndex = currentActivities.reduce((actIndex, activity, index) => {
+        if (activity.name === req.params.id)
+            return index;
+        else return actIndex;
+    }, -1);
+
+    if (activityIndex < 0) {
+        res.send('Cette activité n\'existe plus');
+        return;
+    }
+
+    const activity = currentActivities[activityIndex];
+
     res.render('form', {
-        formID: req.params.id,
-        activity: currentActivity.name,
-        teamActivity: currentActivity.teamActivity
+        activityName: activity.name,
+        teamActivity: activity.teamActivity
     });
 });
-app.post('/form/:id', (req, res) => {
+app.post('/form/:activityName', (req, res) => {
     registerParticipant({
         firstName: req.fields.firstName,
         lastName: req.fields.lastName,
         sector: req.fields.sector,
         team: req.fields.team !== undefined ? req.fields.team : 'none'
-    });
-    res.send(`Formulaire ${req.params.id} envoyé avec succès`);
+    }, req.params.activityName);
+    res.send(`Formulaire ${req.params.activityName} envoyé avec succès`);
 });
 // server
 const server = app.listen(port, host, () => {

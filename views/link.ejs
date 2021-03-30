@@ -7,13 +7,25 @@
 </head>
 <body>
     <div class="container">
-        <p>Lien :</p>
-        <p><a id="formUrl" href="<%= formUrl %>"><%= formUrl %></a></p>
-        <p>QRCode :</p>
-        <canvas id="qrcode-canvas"></canvas>
         <p id="error"></p>
+        <% activities.forEach((activity => { %>
+            <h2><%= activity.name %></h2>
+            <div class="row">
+                <div class="col s12">
+                    <p>Lien :</p>
+                    <p><a href="<%= baseUrl %><%= activity.name %>">Lien vers le formulaire</a></p>
+                    <p>QRCode :</p>
+                    <canvas id="qrcode-canvas-<%= activity.name %>"></canvas>
+                </div>
+            </div>
+        <% })); %>
     </div>
     <script src="/js/qrcode.min.js"></script>
     <script src="/js/link.js"></script>
+    <script>
+        <% activities.forEach((activity => { %>
+            createQRCode('<%= baseUrl %>', '<%= activity.name %>');
+        <% })); %>
+    </script>
 </body>
 </html>

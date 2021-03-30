@@ -1,4 +1,10 @@
-{
-    "name": "foot",
-    "teamActivity": false
-}
+[
+    {
+        "name": "foot",
+        "teamActivity": true
+    },
+    {
+        "name": "race",
+        "teamActivity": false
+    }
+]
