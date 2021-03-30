@@ -3,9 +3,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire de suivi</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="/css/form.css">
 </head>
 <body>
-    <h1>Formulaire</h1>
-    <p>Voici le formulaire : <%= formID %></p>
+    <div class="container">
+        <div class="row">
+            <h1>Formulaire <%= activity %></h1>
+            <p>ID : <%= formID %></p>
+        </div>
+        <div class="row">
+            <form class="col s12" id="form" method="POST">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input class="validate" required="" aria-required="true" id="first-name" type="text" placeholder="Michel">
+                        <label for="first-name">Prénom</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input class="validate" required="" aria-required="true" id="last-name" type="text" placeholder="Dumas">
+                        <label for="last-name">Nom</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <select id="sector">
+                            <option value="I1">I1</option>
+                            <option value="M2">M1</option>
+                            <option value="E1">E1</option>
+                            <option value="T1">T1</option>
+                            <option value="I2">I2</option>
+                            <option value="M2">M2</option>
+                            <option value="E2">E2</option>
+                            <option value="T2">T2</option>
+                            <option value="I3">I3</option>
+                            <option value="M3">M3</option>
+                            <option value="E3">E3</option>
+                            <option value="T3">T3</option>
+                        </select>
+                        <label for="sector">Filière</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input <%= teamActivity ? '' : 'disabled' %> class="validate" id="team" type="number" min="1" max="20" step="1">
+                        <label for="team">Équipe</label>
+                    </div>
+                </div>
+                <button class="btn waves-effect waves-light" type="submit" name="action">Envoyer
+                    <i class="material-icons right">send</i>
+                </button>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="/js/form.js"></script>
 </body>
 </html>

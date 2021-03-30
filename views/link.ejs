@@ -1,0 +1,19 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lien activité</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+    <div class="container">
+        <p>Lien :</p>
+        <p><a id="formUrl" href="<%= formUrl %>"><%= formUrl %></a></p>
+        <p>QRCode :</p>
+        <canvas id="qrcode-canvas"></canvas>
+        <p id="error"></p>
+    </div>
+    <script src="/js/qrcode.min.js"></script>
+    <script src="/js/link.js"></script>
+</body>
+</html>
