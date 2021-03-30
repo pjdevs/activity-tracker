@@ -1,7 +1,4 @@
-[
-    {
-        "name": "foot",
-        "something": "else",
-        "participants": 120
-    }
-]
+{
+    "name": "foot",
+    "teamActivity": false
+}

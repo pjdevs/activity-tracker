@@ -14,20 +14,20 @@
             <p>ID : <%= formID %></p>
         </div>
         <div class="row">
-            <form class="col s12" id="form" method="POST">
+            <form class="col s12" id="form" method="POST" action="">
                 <div class="row">
                     <div class="input-field col s6">
-                        <input class="validate" required="" aria-required="true" id="first-name" type="text" placeholder="Michel">
+                        <input class="validate" required="" aria-required="true" name="firstName" id="first-name" type="text" placeholder="Michel">
                         <label for="first-name">Prénom</label>
                     </div>
                     <div class="input-field col s6">
-                        <input class="validate" required="" aria-required="true" id="last-name" type="text" placeholder="Dumas">
+                        <input class="validate" required="" aria-required="true" name="lastName" id="last-name" type="text" placeholder="Dumas">
                         <label for="last-name">Nom</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <select id="sector">
+                        <select name="sector" id="sector">
                             <option value="I1">I1</option>
                             <option value="M2">M1</option>
                             <option value="E1">E1</option>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input <%= teamActivity ? '' : 'disabled' %> class="validate" id="team" type="number" min="1" max="20" step="1">
+                        <input <%= teamActivity ? '' : 'disabled' %> class="validate" required="" aria-required="true" name="team" id="team" type="number" min="1" max="20" step="1">
                         <label for="team">Équipe</label>
                     </div>
                 </div>

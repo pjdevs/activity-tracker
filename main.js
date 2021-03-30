@@ -1,26 +1,49 @@
+// Modules
 const express = require('express');
+const formidable = require('express-formidable');
 const morgan = require('morgan');
+const fs = require('fs');
 
-// vars
+// Constants
+const participantFolder = 'participants/';
+const activityFile = './activities.json'
 const host = '';
 const port = 80;
 const app = express();
 
-// db like
-const currentActivity = {
-    name: 'foot',
-    teamActivity: true
-};
+// Database like stuff
+let currentActivity;
 
-// app setup
+function fetchActivity() {
+    currentActivity = JSON.parse(fs.readFileSync(activityFile));
+}
+
+function registerParticipant(participant) {
+    const listPath = `${participantFolder}list-${currentActivity.name}.json`;
+
+    if (!fs.existsSync(listPath)) {
+        fs.writeFileSync(listPath, JSON.stringify([]));
+    }
+
+    const participantList = JSON.parse(fs.readFileSync(listPath));
+    participantList.push(participant);
+
+    fs.writeFileSync(listPath, JSON.stringify(participantList));
+}
+
+fetchActivity();
+
+// 1pp setup
 app.set('view engine', 'ejs');
 
-// app midlewares
+// 1pp midlewares
 app.use(morgan('common'));
-app.use(express.static(__dirname + "/static"))
+app.use(express.static(__dirname + "/static"));
+app.use(formidable());
 
-// routes
+// App routes
 app.get('/', (req, res) => {
+    fetchActivity();
     res.render('link', {
         formUrl: `${req.protocol}://${req.hostname}/form/${currentActivity.name}`
     });
@@ -36,7 +59,12 @@ app.get('/form/:id', (req, res) => {
     });
 });
 app.post('/form/:id', (req, res) => {
-    // do some register
+    registerParticipant({
+        firstName: req.fields.firstName,
+        lastName: req.fields.lastName,
+        sector: req.fields.sector,
+        team: req.fields.team !== undefined ? req.fields.team : 'none'
+    });
     res.send(`Formulaire ${req.params.id} envoyé avec succès`);
 });
 // server
