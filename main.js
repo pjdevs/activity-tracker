@@ -14,25 +14,52 @@ const app = express();
 // Database like stuff
 let currentActivities;
 
-function fetchActivities() {
+function fetchActivitiesSync() {
     const activityArray = JSON.parse(fs.readFileSync(activityFile));
-    currentActivities = new Map(activityArray.map(activity => [activity.id, activity]));
+    return new Map(activityArray.map(activity => [activity.id, activity]));
 }
 
-function registerParticipant(participant, activityName) {
-    const listPath = `${participantFolder}list-${activityName}.json`;
+function registerParticipant(participant, activity) {
+    return new Promise((resolve, reject) => {
+        // Get participants list file path
+        const listPath = `${participantFolder}list-${activity.name}-${activity.id}.json`;
 
-    if (!fs.existsSync(listPath)) {
-        fs.writeFileSync(listPath, JSON.stringify([]));
-    }
+        // Check if file exists
+        if (!fs.existsSync(listPath)) {
+            fs.writeFileSync(listPath, JSON.stringify([]));
+        }
 
-    const participantList = JSON.parse(fs.readFileSync(listPath));
-    participantList.push(participant);
+        // Read file
+        fs.readFile(listPath, async (err, data) => {
+            if (err) return reject(err);
 
-    fs.writeFileSync(listPath, JSON.stringify(participantList));
+            const participantList = JSON.parse(data);
+
+            // Check if participant already in list
+            const isInList = await new Promise((inList) => {
+                participantList.forEach(p => {
+                    if (p.firstName === participant.firstName
+                        && p.lastName === participant.lastName
+                        && p.sector === participant.sector)
+                        return inList(true);
+                });
+
+                return inList(false);
+            });
+
+            if (isInList)
+                return reject('participant already registered');
+            else participantList.push(participant);
+    
+            fs.writeFile(listPath, JSON.stringify(participantList), (err) => {
+                if (err) return reject(err);
+                else return resolve();
+            });
+        });
+    });
 }
 
-fetchActivities();
+currentActivities = fetchActivitiesSync();
 
 // 1pp setup
 app.set('view engine', 'ejs');
@@ -44,7 +71,8 @@ app.use(formidable());
 
 // App routes
 app.get('/', (req, res) => {
-    fetchActivities();
+    currentActivities =  fetchActivitiesSync();
+    
     res.render('link', {
         activities: [...currentActivities.values()],
         baseUrl: `${req.protocol}://${req.hostname}/form/`
@@ -67,7 +95,7 @@ app.post('/form/:id', (req, res) => {
     const activity = currentActivities.get(req.params.id);
 
     if (activity === undefined) {
-        res.send(`Erreur: l'activité ${req.params.id} n'existe pas`);
+        res.send(`Erreur: L'activité ${req.params.id} n'existe pas`);
         return;
     }
 
@@ -76,8 +104,15 @@ app.post('/form/:id', (req, res) => {
         lastName: req.fields.lastName,
         sector: req.fields.sector,
         team: req.fields.team !== undefined ? req.fields.team : 'none'
-    }, activity.name);
-    res.send(`Formulaire ${activity.name} envoyé avec succès`);
+    }, activity)
+    .then(() => {
+        res.send(`Formulaire ${activity.name} envoyé avec succès`);
+    })
+    .catch((err) => {
+        console.log('Error:');
+        console.log(err);
+        res.send('Erreur: Ce fomulaire n\'a pas été validé. Vous devez déjà être enregistré.');
+    });
 });
 // server
 const server = app.listen(port, host, () => {
