@@ -1,9 +1,11 @@
 [
     {
+        "id": "45e6df4c",
         "name": "foot",
         "teamActivity": true
     },
     {
+        "id": "78a5d45f",
         "name": "race",
         "teamActivity": false
     }

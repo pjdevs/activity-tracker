@@ -13,9 +13,9 @@
             <div class="row">
                 <div class="col s12">
                     <p>Lien :</p>
-                    <p><a href="<%= baseUrl %><%= activity.name %>">Lien vers le formulaire</a></p>
+                    <p><a href="<%= baseUrl %><%= activity.id %>">Lien vers le formulaire</a></p>
                     <p>QRCode :</p>
-                    <canvas id="qrcode-canvas-<%= activity.name %>"></canvas>
+                    <canvas id="qrcode-canvas-<%= activity.id %>"></canvas>
                 </div>
             </div>
         <% })); %>
@@ -24,7 +24,7 @@
     <script src="/js/link.js"></script>
     <script>
         <% activities.forEach((activity => { %>
-            createQRCode('<%= baseUrl %>', '<%= activity.name %>');
+            createQRCode('<%= baseUrl %>', '<%= activity.id %>');
         <% })); %>
     </script>
 </body>

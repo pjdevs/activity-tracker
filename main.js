@@ -15,7 +15,8 @@ const app = express();
 let currentActivities;
 
 function fetchActivities() {
-    currentActivities = JSON.parse(fs.readFileSync(activityFile));
+    const activityArray = JSON.parse(fs.readFileSync(activityFile));
+    currentActivities = new Map(activityArray.map(activity => [activity.id, activity]));
 }
 
 function registerParticipant(participant, activityName) {
@@ -45,40 +46,38 @@ app.use(formidable());
 app.get('/', (req, res) => {
     fetchActivities();
     res.render('link', {
-        activities: currentActivities,
+        activities: [...currentActivities.values()],
         baseUrl: `${req.protocol}://${req.hostname}/form/`
     });
 });
-app.get('/form/', (req, res) => {
-    res.send(`A link ID must be specified`);
-});
 app.get('/form/:id', (req, res) => {
-    const activityIndex = currentActivities.reduce((actIndex, activity, index) => {
-        if (activity.name === req.params.id)
-            return index;
-        else return actIndex;
-    }, -1);
+    const activity = currentActivities.get(req.params.id);
 
-    if (activityIndex < 0) {
-        res.send('Cette activité n\'existe plus');
+    if (activity === undefined) {
+        res.send('Erreur: cette activité n\'existe pas');
         return;
     }
-
-    const activity = currentActivities[activityIndex];
 
     res.render('form', {
         activityName: activity.name,
         teamActivity: activity.teamActivity
     });
 });
-app.post('/form/:activityName', (req, res) => {
+app.post('/form/:id', (req, res) => {
+    const activity = currentActivities.get(req.params.id);
+
+    if (activity === undefined) {
+        res.send(`Erreur: l'activité ${req.params.id} n'existe pas`);
+        return;
+    }
+
     registerParticipant({
         firstName: req.fields.firstName,
         lastName: req.fields.lastName,
         sector: req.fields.sector,
         team: req.fields.team !== undefined ? req.fields.team : 'none'
-    }, req.params.activityName);
-    res.send(`Formulaire ${req.params.activityName} envoyé avec succès`);
+    }, activity.name);
+    res.send(`Formulaire ${activity.name} envoyé avec succès`);
 });
 // server
 const server = app.listen(port, host, () => {
