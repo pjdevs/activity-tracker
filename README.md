@@ -8,6 +8,7 @@ A simple tracker for participants of activities
 - An activity is an object :
 ```json
 {
+    "id": "<unique-id>",
     "name": "<name>",
     "teamActivity": "<is this activity with teams"
 }
@@ -17,4 +18,4 @@ A simple tracker for participants of activities
 ## Specs
 
 - Every `GET` on `/` will update the activity list
-- Participants list is under folder `participants` with name `list-<activity-name>.json`
+- Participants list is under folder `participants` with name `list-<activity.name>-<activity.id>.json`
