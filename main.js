@@ -55,7 +55,7 @@ app.post('/form/:id', (req, res) => {
         firstName: req.fields.firstName,
         lastName: req.fields.lastName,
         sector: req.fields.sector,
-        team: req.fields.team !== undefined ? req.fields.team : 'none'
+        team: req.fields.team !== undefined ? req.fields.team.toLocaleLowerCase() : 'none'
     }, activity)
     .then(() => {
         res.send(`Formulaire ${activity.name} envoyé avec succès`);
