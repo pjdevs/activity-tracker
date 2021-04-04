@@ -51,13 +51,18 @@ app.post('/form/:id', (req, res) => {
         return;
     }
 
-    registerParticipant({
+    const participant = {
         firstName: req.fields.firstName,
         lastName: req.fields.lastName,
         sector: req.fields.sector,
-        team: req.fields.team !== undefined ? req.fields.team.toLocaleLowerCase() : 'none'
-    }, activity)
+        team: req.fields.team !== undefined ? req.fields.team.toLocaleLowerCase() : 'none',
+        contact: req.fields.contact
+    };
+
+    registerParticipant(participant, activity)
     .then(() => {
+        console.log("Registered participant :");
+        console.log(participant);
         res.send(`Formulaire ${activity.name} envoyé avec succès`);
     })
     .catch((err) => {
